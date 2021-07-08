@@ -1,0 +1,6 @@
+include ':module_login'
+include ':lib_network'
+include ':lib_apt'
+include ':lib_annotation'
+include ':app'
+rootProject.name = "MyMVPModuleDemo"

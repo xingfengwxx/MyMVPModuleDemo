@@ -1,0 +1,76 @@
+if (isDebug) {
+    apply plugin: 'com.android.application'
+} else {
+    apply plugin: 'com.android.library'
+}
+apply plugin: 'dagger.hilt.android.plugin'
+
+def cfg = rootProject.ext
+
+android {
+    compileSdkVersion cfg.android.compileSdkVersion
+    buildToolsVersion cfg.android.buildToolsVersion
+
+    defaultConfig {
+        if (isDebug) {
+            applicationId cfg.applicationId['module_login']
+        }
+        minSdkVersion cfg.android.minSdkVersion
+        targetSdkVersion cfg.android.targetSdkVersion
+        versionCode cfg.android.versionCode
+        versionName cfg.android.versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+
+        sourceSets {
+            main {
+                if (isDebug) {
+                    manifest.srcFile 'src/main/debug/AndroidManifest.xml'
+                    main.java.srcDirs += ['src/main/debug/java']
+                } else {
+                    manifest.srcFile 'src/main/AndroidManifest.xml'
+                }
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    annotationProcessor cfg.library['ArouterCompiler']
+
+    implementation cfg.library['Hilt']
+    annotationProcessor cfg.library['HiltCompiler']
+
+    implementation project(':lib_network')
+
+}
